@@ -123,3 +123,10 @@ select.form-input { cursor: pointer; }
 
 /* FOOTER */
 .footer { padding: 16px 32px; border-top: 1px solid #1e2433; font-size: 11px; color: #2d3748; letter-spacing: 0.06em; text-align: center; }
+
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+.filter-chip { padding: 5px 14px; font-size: 12px; border-radius: 20px; border: 1px solid #1e2433; cursor: pointer; color: #4a5568; background: transparent; text-decoration: none; font-family: 'Courier New', monospace; }
+.filter-chip:hover { color: #e2e8f0; background: #1a1f2e; }
+.filter-chip.active { background: #1a3a5c; color: #63b3ed; border-color: #2a4a6c; }
+.search-input { padding: 6px 12px; font-size: 13px; font-family: 'Courier New', monospace; background: #0f1117; border: 1px solid #1e2433; border-radius: 4px; color: #e2e8f0; outline: none; min-width: 200px; margin-left: auto; }
+.search-input:focus { border-color: #2a4a6c; }

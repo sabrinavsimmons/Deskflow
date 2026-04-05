@@ -9,22 +9,40 @@ with app.app_context():
 @app.route('/')
 def index():
     conn = get_db()
-    tickets = conn.execute(
-        'SELECT * FROM tickets ORDER BY created_at DESC'
-    ).fetchall()
+
+    status_filter = request.args.get('status', 'all')
+    search_query = request.args.get('q', '')
+
+    query = 'SELECT * FROM tickets WHERE 1=1'
+    params = []
+
+    if status_filter != 'all':
+        query += ' AND status = ?'
+        params.append(status_filter)
+
+    if search_query:
+        query += ' AND (title LIKE ? OR category LIKE ? OR assignee LIKE ?)'
+        params.extend(['%' + search_query + '%'] * 3)
+
+    query += ' ORDER BY created_at DESC'
+    tickets = conn.execute(query, params).fetchall()
+
+    all_tickets = conn.execute('SELECT * FROM tickets').fetchall()
     conn.close()
 
-    open_count = sum(1 for t in tickets if t['status'] == 'open')
-    in_progress_count = sum(1 for t in tickets if t['status'] == 'in-progress')
-    resolved_count = sum(1 for t in tickets if t['status'] == 'resolved')
-    critical_count = sum(1 for t in tickets if t['priority'] == 'critical')
+    open_count = sum(1 for t in all_tickets if t['status'] == 'open')
+    in_progress_count = sum(1 for t in all_tickets if t['status'] == 'in-progress')
+    resolved_count = sum(1 for t in all_tickets if t['status'] == 'resolved')
+    critical_count = sum(1 for t in all_tickets if t['priority'] == 'critical')
 
     return render_template('index.html',
         tickets=tickets,
         open_count=open_count,
         in_progress_count=in_progress_count,
         resolved_count=resolved_count,
-        critical_count=critical_count
+        critical_count=critical_count,
+        status_filter=status_filter,
+        search_query=search_query
     )
 
 @app.route('/ticket/new', methods=['GET', 'POST'])

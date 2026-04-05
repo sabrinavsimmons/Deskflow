@@ -28,6 +28,20 @@
 <div class="section-header">
     <h2 class="section-title">All Tickets</h2>
 </div>
+<div class="filter-bar">
+    <form method="GET" action="/" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; width: 100%;">
+        <a href="/?status=all&q={{ search_query }}" class="filter-chip {% if status_filter == 'all' %}active{% endif %}">All</a>
+        <a href="/?status=open&q={{ search_query }}" class="filter-chip {% if status_filter == 'open' %}active{% endif %}">Open</a>
+        <a href="/?status=in-progress&q={{ search_query }}" class="filter-chip {% if status_filter == 'in-progress' %}active{% endif %}">In Progress</a>
+        <a href="/?status=resolved&q={{ search_query }}" class="filter-chip {% if status_filter == 'resolved' %}active{% endif %}">Resolved</a>
+        <a href="/?status=closed&q={{ search_query }}" class="filter-chip {% if status_filter == 'closed' %}active{% endif %}">Closed</a>
+        <input class="search-input" type="text" name="q" placeholder="Search tickets..." value="{{ search_query }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+        {% if search_query %}
+        <a href="/?status={{ status_filter }}" class="btn btn-secondary">Clear</a>
+        {% endif %}
+    </form>
+</div>
 
 {% if tickets %}
 <div class="ticket-table-wrap">
