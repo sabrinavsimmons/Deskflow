@@ -133,3 +133,5 @@ select.form-input { cursor: pointer; }
 .btn-danger { background: #3d1515; color: #fc8181; border-color: #5c2020; }
 .btn-danger:hover { background: #4d1a1a; color: #feb2b2; }
 .ticket-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
+.flash-messages { padding: 0 32px; margin-top: 16px; }
+.flash { background: #1a3a2a; color: #68d391; border: 1px solid #2a5a3a; border-radius: 4px; padding: 10px 16px; font-size: 13px; margin-bottom: 8px; }

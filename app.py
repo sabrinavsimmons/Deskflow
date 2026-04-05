@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash
 from database import get_db, init_db
+import csv
+import io
+from flask import Response
 
 app = Flask(__name__)
 app.secret_key = 'deskflow-secret-key-change-in-production'
@@ -97,6 +100,7 @@ def new_ticket():
         )
         conn.commit()
         conn.close()
+        flash('Ticket created successfully.')
         return redirect(url_for('index'))
     return render_template('new_ticket.html')
 
@@ -119,17 +123,19 @@ def update_ticket(ticket_id):
     conn.execute('UPDATE tickets SET status = ? WHERE id = ?', (status, ticket_id))
     conn.commit()
     conn.close()
+    flash('Status updated.')
     return redirect(url_for('ticket', ticket_id=ticket_id))
 
 @app.route('/ticket/<int:ticket_id>/note', methods=['POST'])
 @login_required
 def add_note(ticket_id):
-    author = request.form['author']
+    author = current_user.username
     content = request.form['content']
     conn = get_db()
     conn.execute('INSERT INTO notes (ticket_id, author, content) VALUES (?, ?, ?)', (ticket_id, author, content))
     conn.commit()
     conn.close()
+    flash('Note added.')    
     return redirect(url_for('ticket', ticket_id=ticket_id))
 
 @app.route('/ticket/<int:ticket_id>/edit')
@@ -159,6 +165,7 @@ def update_ticket_full(ticket_id):
     )
     conn.commit()
     conn.close()
+    flash('Ticket updated.')
     return redirect(url_for('ticket', ticket_id=ticket_id))
 
 @app.route('/ticket/<int:ticket_id>/delete', methods=['POST'])
@@ -169,7 +176,28 @@ def delete_ticket(ticket_id):
     conn.execute('DELETE FROM tickets WHERE id = ?', (ticket_id,))
     conn.commit()
     conn.close()
+    flash('Ticket deleted.')
     return redirect(url_for('index'))
+
+@app.route('/export')
+@login_required
+def export_csv():
+    conn = get_db()
+    tickets = conn.execute('SELECT * FROM tickets ORDER BY created_at DESC').fetchall()
+    conn.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['ID', 'Title', 'Priority', 'Status', 'Category', 'Assignee', 'Requester', 'Created'])
+    for t in tickets:
+        writer.writerow([t['id'], t['title'], t['priority'], t['status'], t['category'], t['assignee'], t['requester'], t['created_at']])
+
+    output.seek(0)
+    return Response(
+        output.getvalue(),
+        mimetype='text/csv',
+        headers={'Content-Disposition': 'attachment; filename=deskflow-tickets.csv'}
+    )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
