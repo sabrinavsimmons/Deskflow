@@ -19,16 +19,21 @@
                 <span class="meta-item">{{ ticket['created_at'][:10] }}</span>
             </div>
         </div>
-        <form method="POST" action="/ticket/{{ ticket['id'] }}/update" class="status-form">
-            <select name="status" class="form-input status-select">
-                <option value="open" {% if ticket['status'] == 'open' %}selected{% endif %}>Open</option>
-                <option value="in-progress" {% if ticket['status'] == 'in-progress' %}selected{% endif %}>In Progress</option>
-                <option value="resolved" {% if ticket['status'] == 'resolved' %}selected{% endif %}>Resolved</option>
-                <option value="closed" {% if ticket['status'] == 'closed' %}selected{% endif %}>Closed</option>
-            </select>
-            <button type="submit" class="btn btn-primary">Update</button>
-	<a href="/ticket/{{ ticket['id'] }}/edit" class="btn btn-secondary">Edit</a>
-        </form>
+        <div class="ticket-actions">
+            <form method="POST" action="/ticket/{{ ticket['id'] }}/update" class="status-form">
+                <select name="status" class="form-input status-select">
+                    <option value="open" {% if ticket['status'] == 'open' %}selected{% endif %}>Open</option>
+                    <option value="in-progress" {% if ticket['status'] == 'in-progress' %}selected{% endif %}>In Progress</option>
+                    <option value="resolved" {% if ticket['status'] == 'resolved' %}selected{% endif %}>Resolved</option>
+                    <option value="closed" {% if ticket['status'] == 'closed' %}selected{% endif %}>Closed</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+            <a href="/ticket/{{ ticket['id'] }}/edit" class="btn btn-secondary">Edit</a>
+            <form method="POST" action="/ticket/{{ ticket['id'] }}/delete" style="display:inline;" onsubmit="return confirm('Delete this ticket? This cannot be undone.');">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
     </div>
 
     <div class="ticket-description">

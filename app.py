@@ -106,6 +106,15 @@ def add_note(ticket_id):
     conn.close()
     return redirect(url_for('ticket', ticket_id=ticket_id))
 
+@app.route('/ticket/<int:ticket_id>/delete', methods=['POST'])
+def delete_ticket(ticket_id):
+    conn = get_db()
+    conn.execute('DELETE FROM notes WHERE ticket_id = ?', (ticket_id,))
+    conn.execute('DELETE FROM tickets WHERE id = ?', (ticket_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('index'))
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
 
