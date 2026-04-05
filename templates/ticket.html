@@ -27,6 +27,7 @@
                 <option value="closed" {% if ticket['status'] == 'closed' %}selected{% endif %}>Closed</option>
             </select>
             <button type="submit" class="btn btn-primary">Update</button>
+	<a href="/ticket/{{ ticket['id'] }}/edit" class="btn btn-secondary">Edit</a>
         </form>
     </div>
 

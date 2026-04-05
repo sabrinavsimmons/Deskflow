@@ -21,6 +21,7 @@ Deployed on a Ubuntu Server 24.04 VM running in a Proxmox homelab environment.
 
 ## Project Structure
 ```
+
 ticketing-app/
 ├── app.py            # Flask routes and application logic
 ├── database.py       # SQLite database setup and connection

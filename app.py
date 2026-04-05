@@ -90,3 +90,35 @@ def add_note(ticket_id):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+@app.route('/ticket/<int:ticket_id>/edit')
+def edit_ticket(ticket_id):
+    conn = get_db()
+    t = conn.execute(
+        'SELECT * FROM tickets WHERE id = ?', (ticket_id,)
+    ).fetchone()
+    conn.close()
+
+    if t is None:
+        return 'Ticket not found.', 404
+
+    return render_template('edit_ticket.html', ticket=t)
+
+@app.route('/ticket/<int:ticket_id>/edit', methods=['POST'])
+def update_ticket_full(ticket_id):
+    title = request.form['title']
+    description = request.form['description']
+    priority = request.form['priority']
+    category = request.form['category']
+    assignee = request.form['assignee']
+    requester = request.form['requester']
+
+    conn = get_db()
+    conn.execute(
+        '''UPDATE tickets SET title = ?, description = ?, priority = ?,
+           category = ?, assignee = ?, requester = ? WHERE id = ?''',
+        (title, description, priority, category, assignee, requester, ticket_id)
+    )
+    conn.commit()
+    conn.close()
+    return redirect(url_for('ticket', ticket_id=ticket_id))

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Edit Ticket #{{ ticket['id'] }} · DeskFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="/ticket/{{ ticket['id'] }}" class="back-link">← back to ticket</a>
+</div>
+
+<div class="form-card" style="max-width: 640px;">
+    <div class="section-header" style="margin-bottom: 18px;">
+        <h2 class="section-title">Edit Ticket #{{ ticket['id'] }}</h2>
+    </div>
+    <form method="POST" action="/ticket/{{ ticket['id'] }}/edit">
+        <div class="form-grid">
+            <div class="form-group form-full">
+                <label class="form-label">Title *</label>
+                <input class="form-input" type="text" name="title" value="{{ ticket['title'] }}" required>
+            </div>
+            <div class="form-group form-full">
+                <label class="form-label">Description *</label>
+                <textarea class="form-input" name="description" rows="5" required>{{ ticket['description'] }}</textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Priority</label>
+                <select class="form-input" name="priority">
+                    <option value="low" {% if ticket['priority'] == 'low' %}selected{% endif %}>Low</option>
+                    <option value="medium" {% if ticket['priority'] == 'medium' %}selected{% endif %}>Medium</option>
+                    <option value="high" {% if ticket['priority'] == 'high' %}selected{% endif %}>High</option>
+                    <option value="critical" {% if ticket['priority'] == 'critical' %}selected{% endif %}>Critical</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-input" name="category">
+                    <option {% if ticket['category'] == 'Hardware' %}selected{% endif %}>Hardware</option>
+                    <option {% if ticket['category'] == 'Software' %}selected{% endif %}>Software</option>
+                    <option {% if ticket['category'] == 'Network' %}selected{% endif %}>Network</option>
+                    <option {% if ticket['category'] == 'Access / Permissions' %}selected{% endif %}>Access / Permissions</option>
+                    <option {% if ticket['category'] == 'Email / Communication' %}selected{% endif %}>Email / Communication</option>
+                    <option {% if ticket['category'] == 'Security' %}selected{% endif %}>Security</option>
+                    <option {% if ticket['category'] == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Assignee</label>
+                <input class="form-input" type="text" name="assignee" value="{{ ticket['assignee'] or '' }}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Requester</label>
+                <input class="form-input" type="text" name="requester" value="{{ ticket['requester'] or '' }}">
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="/ticket/{{ ticket['id'] }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
