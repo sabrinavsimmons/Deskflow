@@ -15,6 +15,10 @@
         <div class="nav-links">
             <a href="{{ url_for('index') }}" class="nav-link">Dashboard</a>
             <a href="{{ url_for('new_ticket') }}" class="nav-link nav-link-primary">+ New Ticket</a>
+	   {% if current_user.is_authenticated %}
+           <span style="font-size: 12px; color: #4a5568; padding: 0 8px;">{{ current_user.username }}</span>
+           <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+           {% endif %}
         </div>
     </nav>
 
