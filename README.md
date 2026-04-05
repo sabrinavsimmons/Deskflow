@@ -20,19 +20,20 @@ Deployed on a Ubuntu Server 24.04 VM running in a Proxmox homelab environment.
 - **Infrastructure:** Ubuntu Server 24.04 VM on Proxmox VE
 
 ## Project Structure
-
+```
 ticketing-app/
-├── app.py          # Flask routes and application logic
-├── database.py     # SQLite database setup and connection
-├── tickets.db      # SQLite database file
-├── templates/      # Jinja2 HTML templates
+├── app.py            # Flask routes and application logic
+├── database.py       # SQLite database setup and connection
+├── tickets.db        # SQLite database file
+├── templates/        # Jinja2 HTML templates
 │   ├── base.html
 │   ├── index.html
 │   ├── ticket.html
 │   └── new_ticket.html
 └── static/
-└── css/
-└── style.css
+    └── css/
+        └── style.css
+```
 
 ## Deployment
 
