@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}#{{ ticket['id'] }} · DeskFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{{ url_for('index') }}" class="back-link">← back to dashboard</a>
+</div>
+
+<div class="ticket-detail-card">
+    <div class="ticket-detail-header">
+        <div>
+            <div class="ticket-detail-id">#{{ ticket['id'] }} · {{ ticket['category'] }}</div>
+            <h1 class="ticket-detail-title">{{ ticket['title'] }}</h1>
+            <div class="ticket-detail-meta">
+                <span class="badge badge-{{ ticket['priority'] }}">{{ ticket['priority'] }}</span>
+                <span class="badge badge-status-{{ ticket['status'] }}">{{ ticket['status'] }}</span>
+                <span class="meta-item">Assigned to {{ ticket['assignee'] or 'nobody' }}</span>
+                <span class="meta-item">Opened by {{ ticket['requester'] or 'unknown' }}</span>
+                <span class="meta-item">{{ ticket['created_at'][:10] }}</span>
+            </div>
+        </div>
+        <form method="POST" action="/ticket/{{ ticket['id'] }}/update" class="status-form">
+            <select name="status" class="form-input status-select">
+                <option value="open" {% if ticket['status'] == 'open' %}selected{% endif %}>Open</option>
+                <option value="in-progress" {% if ticket['status'] == 'in-progress' %}selected{% endif %}>In Progress</option>
+                <option value="resolved" {% if ticket['status'] == 'resolved' %}selected{% endif %}>Resolved</option>
+                <option value="closed" {% if ticket['status'] == 'closed' %}selected{% endif %}>Closed</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+
+    <div class="ticket-description">
+        {{ ticket['description'] }}
+    </div>
+</div>
+
+<div class="notes-card">
+    <div class="section-header">
+        <h2 class="section-title">Activity</h2>
+    </div>
+
+    {% if notes %}
+    <div class="notes-list">
+        {% for note in notes %}
+        <div class="note">
+            <div class="note-avatar">{{ note['author'][:2].upper() }}</div>
+            <div class="note-body">
+                <div class="note-meta">
+                    <strong>{{ note['author'] }}</strong> · {{ note['created_at'][:16] }}
+                </div>
+                <div class="note-content">{{ note['content'] }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-notes">No activity yet.</p>
+    {% endif %}
+
+    <div class="reply-box">
+        <form method="POST" action="/ticket/{{ ticket['id'] }}/note">
+            <div class="form-group">
+                <label class="form-label">Your name</label>
+                <input class="form-input" type="text" name="author" placeholder="Name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Note</label>
+                <textarea class="form-input" name="content" rows="3" placeholder="Add a note or update..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Note</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
