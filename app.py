@@ -232,6 +232,55 @@ def change_password():
         return redirect(url_for('index'))
 
     return render_template('change_password.html')
+@app.route('/users')
+@login_required
+def manage_users():
+    conn = get_db()
+    users = conn.execute('SELECT id, username FROM users ORDER BY username').fetchall()
+    conn.close()
+    return render_template('users.html', users=users)
+
+@app.route('/users/add', methods=['POST'])
+@login_required
+def add_user():
+    username = request.form['username'].strip()
+    password = request.form['password']
+
+    if not username or not password:
+        flash('Username and password are required.')
+        return redirect(url_for('manage_users'))
+
+    if len(password) < 8:
+        flash('Password must be at least 8 characters.')
+        return redirect(url_for('manage_users'))
+
+    conn = get_db()
+    existing = conn.execute('SELECT id FROM users WHERE username = ?', (username,)).fetchone()
+    if existing:
+        conn.close()
+        flash('Username already exists.')
+        return redirect(url_for('manage_users'))
+
+    conn.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)',
+        (username, generate_password_hash(password)))
+    conn.commit()
+    conn.close()
+    flash('User ' + username + ' created.')
+    return redirect(url_for('manage_users'))
+
+@app.route('/users/delete/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    if user_id == current_user.id:
+        flash('You cannot delete your own account.')
+        return redirect(url_for('manage_users'))
+
+    conn = get_db()
+    conn.execute('DELETE FROM users WHERE id = ?', (user_id,))
+    conn.commit()
+    conn.close()
+    flash('User deleted.')
+    return redirect(url_for('manage_users'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
