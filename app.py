@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from database import get_db, init_db
 import csv
 import io
@@ -198,6 +198,40 @@ def export_csv():
         mimetype='text/csv',
         headers={'Content-Disposition': 'attachment; filename=deskflow-tickets.csv'}
     )
+@app.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+
+        conn = get_db()
+        user = conn.execute('SELECT * FROM users WHERE id = ?', (current_user.id,)).fetchone()
+
+        if not check_password_hash(user['password_hash'], current_password):
+            conn.close()
+            flash('Current password is incorrect.')
+            return redirect(url_for('change_password'))
+
+        if new_password != confirm_password:
+            conn.close()
+            flash('New passwords do not match.')
+            return redirect(url_for('change_password'))
+
+        if len(new_password) < 8:
+            conn.close()
+            flash('Password must be at least 8 characters.')
+            return redirect(url_for('change_password'))
+
+        conn.execute('UPDATE users SET password_hash = ? WHERE id = ?',
+            (generate_password_hash(new_password), current_user.id))
+        conn.commit()
+        conn.close()
+        flash('Password changed successfully.')
+        return redirect(url_for('index'))
+
+    return render_template('change_password.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
