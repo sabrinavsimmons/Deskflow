@@ -5,11 +5,24 @@ Deployed on a Ubuntu Server 24.04 VM running in a Proxmox homelab environment.
 
 ## Features
 
-- Create, view, and update support tickets
+**Tickets**
+- Create, view, edit, and delete support tickets
 - Priority levels: low, medium, high, critical
 - Status tracking: open, in progress, resolved, closed
 - Activity thread with timestamped notes per ticket
-- Live dashboard with open, in-progress, resolved, and critical counts
+- Note author auto-populated from logged-in user
+
+**Dashboard**
+- Live stats: open, in progress, resolved, and critical counts
+- Filter tickets by status
+- Search by title, category, or assignee
+- Export all tickets to CSV
+
+**Authentication & User Management**
+- Login/logout with session management
+- Passwords hashed with Werkzeug
+- Change password from the UI
+- Add and delete users from the UI
 
 ## Tech Stack
 
@@ -23,18 +36,37 @@ Deployed on a Ubuntu Server 24.04 VM running in a Proxmox homelab environment.
 ```
 
 ticketing-app/
-├── app.py            # Flask routes and application logic
-├── database.py       # SQLite database setup and connection
-├── tickets.db        # SQLite database file
-├── templates/        # Jinja2 HTML templates
+├── app.py                  # Flask routes and application logic
+├── database.py             # SQLite database setup and connection
+├── tickets.db              # SQLite database file
+├── requirements.txt        # Python dependencies
+├── templates/              # Jinja2 HTML templates
 │   ├── base.html
+│   ├── login.html
 │   ├── index.html
 │   ├── ticket.html
-│   └── new_ticket.html
+│   ├── new_ticket.html
+│   ├── edit_ticket.html
+│   ├── change_password.html
+│   └── users.html
 └── static/
-    └── css/
-        └── style.css
+└── css/
+└── style.css
+
 ```
+
+## Installation
+```bash
+git clone https://github.com/sabrinavsimmons/Deskflow.git
+cd Deskflow
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python database.py
+python app.py
+```
+
+Access the app at `http://localhost:5000`.
 
 ## Deployment
 
@@ -48,4 +80,4 @@ Access the app at `http://<server-ip>:5000` from any device on the network.
 ## Purpose
 
 Built as a homelab portfolio project to demonstrate full-stack web development,
-Linux server administration, database design, and self-hosted service deployment.
+Linux server administration, database design, authentication, and self-hosted service deployment.
